@@ -1,0 +1,151 @@
+<nb-card>
+    <nb-card-body>
+        <div class="form-group row" id="assignHead">
+            <nb-select placeholder="Select day" size="medium" appearance="outline" [selected]="selectedWeekDay"
+                       (selectedChange)="changeWeekDay($event)" status="primary">
+                <nb-option [value]="defaultOptionValue">All Days</nb-option>
+                <nb-option *ngFor="let weekDay of weekDays" [value]="weekDay.id"> {{ weekDay.day }}</nb-option>
+            </nb-select>
+            &nbsp;
+            <nb-select placeholder="Select ClassRoom" size="medium" appearance="outline" [selected]="selectedClassRoom"
+                       (selectedChange)="changeClassRoom($event)" status="primary">
+                <nb-option [value]="defaultOptionValue">All ClassRooms</nb-option>
+                <nb-option *ngFor="let classRoom of classRooms" [value]="classRoom.id"> {{ classRoom.name }}</nb-option>
+            </nb-select>
+            &nbsp;
+            <nb-select placeholder="Select ClassRoom" size="medium" appearance="outline" [selected]="selectedTimeSlot"
+                       (selectedChange)="changeTimeSlot($event)" status="primary">
+                <nb-option [value]="defaultOptionValue">All TimeSlots</nb-option>
+                <nb-option *ngFor="let timeSlot of timeSlots" [value]="timeSlot.id"> {{ timeSlot.fromTime }}</nb-option>
+            </nb-select>
+            &nbsp;
+<!--            <nb-select size="medium" appearance="outline" [(ngModel)]="cardView" status="primary" align="right">-->
+<!--                <nb-option [value]="'professor'">Professor View</nb-option>-->
+<!--                <nb-option [value]="'classRoom'">ClassRoom View</nb-option>-->
+<!--            </nb-select>-->
+            &nbsp;&nbsp;
+            <button *ngIf="cardView === 'classRoom'" nbButton [status]="isEditMode ? 'warning' : 'success'" (click)="toggleEditMode()">
+                {{isEditMode ? "Disable" : 'Enable'}} Edit Mode
+            </button>
+        </div>
+    </nb-card-body>
+</nb-card>
+<nb-card [nbSpinner]="!timeTableDataLoaded" nbSpinnerSize="medium" nbSpinnerStatus="primary"
+         *ngIf="cardView == 'classRoom'">
+    <nb-card-header>
+        <span>ClassRoom View</span>
+    </nb-card-header>
+    <nb-card-body>
+        <div class="row" [hidden]="slotSelection === null">
+            <div class="col-md-12">
+                <h5>Assign Professor to Class room</h5>
+                <nb-alert status="danger" *ngIf="errorMessage">{{errorMessage}}</nb-alert>
+                <form class="form-inline" [formGroup]="form" (ngSubmit)="onSubmit()">
+                    <nb-select placeholder="Select ClassRoom" size="medium" appearance="outline"
+                               formControlName="class_room_id" status="primary">
+                        <nb-option *ngFor="let classRoom of classRooms"
+                                   [value]="classRoom.id"> {{ classRoom.name }}</nb-option>
+                    </nb-select>
+
+                    <nb-select placeholder="Select day" size="medium" appearance="outline" formControlName="day_id"
+                               status="primary">
+                        <nb-option *ngFor="let weekDay of weekDays" [value]="weekDay.id"> {{ weekDay.day }}</nb-option>
+                    </nb-select>
+
+                    <nb-select placeholder="Select Time Slot" size="medium" appearance="outline"
+                               formControlName="time_slot_id" status="primary">
+                        <nb-option *ngFor="let timeSlot of timeSlots"
+                                   [value]="timeSlot.id"> {{ timeSlot.fromTime }}</nb-option>
+                    </nb-select>
+
+                    <nb-select placeholder="Select Professor" size="medium" appearance="outline"
+                               formControlName="professor_id" status="primary">
+                        <nb-option *ngFor="let professor of professors"
+                                   [value]="professor.id"> {{ professor.name }}</nb-option>
+                    </nb-select>
+
+                    <nb-select *ngIf="form.get('professor_id').value && professorDataMapping[form.get('professor_id').value]" placeholder="Select Subject" size="medium"
+                               appearance="outline" formControlName="subject_id" status="primary">
+                        <nb-option *ngFor="let subject of professorDataMapping[form.get('professor_id').value].subjects" [value]="subject"> {{ (subjectDataMapping[subject])?.name || 'Unknown' }}</nb-option>
+                    </nb-select>
+
+                    <input type="hidden" formControlName="id">
+                    &nbsp; &nbsp;
+                    <button type="submit" nbButton size="medium" status="primary" [disabled]="form.invalid"
+                            [nbSpinner]="isSubmiting" nbSpinnerStatus="success" nbSpinnerSize="tiny"
+                    >{{form.get('id').value ? 'Update' : 'Add'}}</button>
+                    &nbsp; &nbsp;
+                    <button type="button" (click)="cancelForm()" nbButton size="medium" status="danger">Cancel</button>
+                </form>
+                <hr>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="timeTableDataLoaded">
+
+            <div class="col-md-6" *ngFor="let classRoom of classRooms">
+                <div *ngIf="dataMapping.hasOwnProperty(classRoom.id)" class="table-responsive">
+                    <h5>{{classRoom.name}}</h5>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <th>TimeSlot</th>
+                        <th *ngFor="let weekDay of currentWeekDays">{{weekDay.day}}</th>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let timeSlot of timeSlots">
+                            <td>
+                                {{timeSlot.fromTime}} ({{timeSlot.id}})
+                            </td>
+                            <td *ngFor="let weekDay of currentWeekDays">
+                                <span>{{this.getDayInfo(classRoom.id, timeSlot.id, weekDay.id)}}</span>
+                                &nbsp; &nbsp; &nbsp;
+                                <span *ngIf="isEditMode">
+                                    <button nbButton status="primary" size="tiny"
+                                            (click)="assignProfessor(classRoom.id, timeSlot.id, weekDay.id)"
+                                            *ngIf="this.isExist(classRoom.id, timeSlot.id, weekDay.id)">
+                                        <i class="nb-edit"></i>
+                                    </button>
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </nb-card-body>
+</nb-card>
+
+<nb-card [nbSpinner]="!professorViewLoaded" nbSpinnerSize="medium" nbSpinnerStatus="primary"
+         *ngIf="cardView == 'professor'">
+    <nb-card-header>
+        <span>Professor View</span>
+    </nb-card-header>
+    <nb-card-body>
+        <div class="row" *ngIf="professorViewLoaded">
+            <div class="col-md-12" *ngFor="let professor of professors">
+                <div class="table-responsive">
+                    <h5>{{professor.name}}</h5>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <th>TimeSlot</th>
+                        <th *ngFor="let weekDay of currentWeekDays">{{weekDay.day}}</th>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let timeSlot of timeSlots">
+                            <td>
+                                {{timeSlot.fromTime}}
+                            </td>
+                            <td *ngFor="let weekDay of currentWeekDays">
+                                <span *ngFor="let classRoomItem of getProfessorItems(professor.id,weekDay.id,timeSlot.id)">
+                                    {{getDayInfoByProfessor(classRoomItem)}}
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </nb-card-body>
+</nb-card>

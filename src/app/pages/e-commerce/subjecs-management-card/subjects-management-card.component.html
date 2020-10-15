@@ -1,0 +1,43 @@
+<nb-card [nbSpinner]="dataLoading" nbSpinnerSize="medium" nbSpinnerStatus="primary">
+    <nb-card-header>Subjects</nb-card-header>
+    <nb-card-body>
+        <div class="row">
+            <div class="col-md-12">
+                <form class="form-inline" [formGroup]="subjectForm" (ngSubmit)="onSubmit()">
+                  <input type="text" nbInput formControlName="name">
+                  <input type="hidden" formControlName="id">
+                    <button type="submit" nbButton status="primary" [disabled]="subjectForm.invalid"
+                            [nbSpinner]="isSubmiting" nbSpinnerStatus="success" nbSpinnerSize="tiny"
+                    >{{subjectForm.get('id').value ? 'Update' : 'Add'}}</button>
+                    <button type="reset" nbButton status="danger">Cancel</button>
+                </form>
+            </div>
+            <hr>
+            <div class="col-md-12">
+                <div align="left">
+                    <button nbButton status="primary" size="small" (click)="loadData()"
+                            [nbSpinner]="dataLoading" nbSpinnerStatus="success" nbSpinnerSize="large" nbSpinnerMessage="Refreshing...">Refresh</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" *ngIf="!dataLoading">
+                        <thead>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Action</th>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let subject of subjects;index as i;">
+                            <td>{{subject.id}}</td>
+                            <td>{{subject.name}}</td>
+                            <td>
+                              <button nbButton status="info" size="tiny" (click)="editSubject(subject)">Edit</button>
+                              <button nbButton status="danger" size="tiny" (click)="deleteSubject(subject, i)">Delete</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </nb-card-body>
+</nb-card>
