@@ -35,12 +35,12 @@ export class ClassRoomManagementCardComponent {
             (data: any) => {
                 this.classRooms.splice(index, 1);
             },
-            error => console.log(error)
+            error => console.log(error),
         );
     }
 
     onSubmit() {
-        let formData = this.classRoomForm.value;
+        const formData = this.classRoomForm.value;
         this.service.addNewClassRoom(formData).subscribe(
             (data: ClassRoomInterface) => {
                 this.classRoomForm.reset();
@@ -49,13 +49,13 @@ export class ClassRoomManagementCardComponent {
                     return;
                 }
 
-                this.classRooms.forEach((item : ClassRoomInterface, index) => {
+                this.classRooms.forEach((item: ClassRoomInterface, index) => {
                     if (item.id == data.id) {
                         this.classRooms[index] = data;
                     }
                 });
             },
-            error => console.log(error)
+            error => console.log(error),
         );
     }
 
@@ -68,8 +68,8 @@ export class ClassRoomManagementCardComponent {
             },
             error => {
                 this.dataLoading = false;
-                console.log(error)
-            }
+                console.log(error);
+            },
         );
     }
 

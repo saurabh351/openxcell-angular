@@ -35,7 +35,7 @@ import { DashboardComponent } from './dashboard.component';
     NbButtonModule,
     NgxEchartsModule,
     NbSpinnerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   declarations: [
     DashboardComponent,

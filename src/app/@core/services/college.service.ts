@@ -7,7 +7,7 @@ import {
     SubjectInterface,
     TimeSlotInterface,
     TimeTableInterface,
-    WeekDayInterface
+    WeekDayInterface,
 } from '../interfaces';
 
 @Injectable()

@@ -12,7 +12,7 @@ import { CollegeService } from '../../../@core/services/college.service';
 export class SubjectsManagementCardComponent {
     subjects: SubjectInterface[] = [];
 
-    isSubmiting:boolean=false;
+    isSubmiting: boolean = false;
 
     dataLoading: boolean = true;
 
@@ -37,13 +37,13 @@ export class SubjectsManagementCardComponent {
             (data: any) => {
                 this.subjects.splice(index, 1);
             },
-            error => console.log(error)
+            error => console.log(error),
         );
     }
 
     onSubmit() {
         this.isSubmiting = true;
-        let formData = this.subjectForm.value;
+        const formData = this.subjectForm.value;
         this.service.addNewSubject(formData).subscribe(
             (data: SubjectInterface) => {
 
@@ -55,13 +55,13 @@ export class SubjectsManagementCardComponent {
                     return;
                 }
 
-                this.subjects.forEach((subject : SubjectInterface, index) => {
+                this.subjects.forEach((subject: SubjectInterface, index) => {
                     if (subject.id == data.id) {
                         this.subjects[index] = data;
                     }
                 });
             },
-            error => console.log(error)
+            error => console.log(error),
         );
     }
 
@@ -74,8 +74,8 @@ export class SubjectsManagementCardComponent {
             },
             error => {
                 this.dataLoading = false;
-                console.log(error)
-            }
+                console.log(error);
+            },
         );
     }
 

@@ -4,7 +4,7 @@ import { NbAuthModule } from '@nebular/auth';
 
 import { throwIfAlreadyLoaded } from './module-import-guard';
 import { CollegeService } from './services/college.service';
-import { LayoutService, StateService, } from './utils';
+import { LayoutService, StateService } from './utils';
 
 
 const DATA_SERVICES = [

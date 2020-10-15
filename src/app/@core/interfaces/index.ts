@@ -49,4 +49,4 @@ export {
     ProfessorInterface,
     ClassRoomInterface,
     ProfessorSubjectInterface,
-}
+};

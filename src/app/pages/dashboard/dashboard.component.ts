@@ -6,22 +6,22 @@ import {
     SubjectInterface,
     TimeSlotInterface,
     TimeTableInterface,
-    WeekDayInterface
+    WeekDayInterface,
 } from '../../@core/interfaces';
 import { CollegeService } from '../../@core/services/college.service';
 
 
 interface TimeTableDataMappingInterface {
-    [index:number]: {
-        [index:number]: Partial<{
-            [index:number]: TimeTableInterface;
+    [index: number]: {
+        [index: number]: Partial<{
+            [index: number]: TimeTableInterface;
         }>;
     };
 }
 interface ProfessorTimeTableDataMappingInterface {
-    [index:number]: {
-        [index:number]: Partial<{
-            [index:number]: TimeTableInterface[];
+    [index: number]: {
+        [index: number]: Partial<{
+            [index: number]: TimeTableInterface[];
         }>;
     };
 }
@@ -40,10 +40,10 @@ export class DashboardComponent implements OnDestroy {
     dataMapping: TimeTableDataMappingInterface = {};
     professorTimeTableDataMapping: ProfessorTimeTableDataMappingInterface = {};
     professorDataMapping: {
-        [index:number] : ProfessorInterface
+        [index: number]: ProfessorInterface,
     } = {};
     subjectDataMapping: {
-        [index:number] : SubjectInterface
+        [index: number]: SubjectInterface,
     } = {};
     defaultOptionValue = 'all';
     timeTableRows: TimeTableInterface[] = [];
@@ -85,7 +85,7 @@ export class DashboardComponent implements OnDestroy {
         this.isEditMode = !this.isEditMode;
     }
 
-    onSubmit(){
+    onSubmit() {
         this.isSubmiting = true;
 
         this.service.attachClassRoom(this.form.value).subscribe(
@@ -99,8 +99,8 @@ export class DashboardComponent implements OnDestroy {
             error => {
                 this.isSubmiting = false;
                 this.errorMessage = error.error.message || error.message;
-                console.log(error)
-            }
+                console.log(error);
+            },
         );
     }
 
@@ -126,9 +126,9 @@ export class DashboardComponent implements OnDestroy {
                 subject_id : this.slotSelection.subject_id,
             });
 
-            let el = document.getElementById('assignHead');
+            const el = document.getElementById('assignHead');
             el.scrollIntoView({
-                block : 'start'
+                block : 'start',
             });
         }
     }
@@ -136,7 +136,7 @@ export class DashboardComponent implements OnDestroy {
     changeWeekDay($event) {
         this.selectedWeekDay = $event;
         this.refreshTimeTable();
-        this.currentWeekDays = this.weekDays.filter((weekDay : WeekDayInterface) => {
+        this.currentWeekDays = this.weekDays.filter((weekDay: WeekDayInterface) => {
             return this.selectedWeekDay === 'all' || Number(weekDay.id) == Number(this.selectedWeekDay);
         });
     }
@@ -151,7 +151,7 @@ export class DashboardComponent implements OnDestroy {
     }
 
     getProfessorItems(professorId, dayId, timeSlotId) {
-        if(
+        if (
             this.professorDataMapping[professorId] &&
             this.professorDataMapping[professorId][dayId] &&
             this.professorDataMapping[professorId][dayId][timeSlotId]
@@ -166,50 +166,50 @@ export class DashboardComponent implements OnDestroy {
             (data: any) => {
                 this.timeSlots = data;
             },
-            error => console.log(error)
+            error => console.log(error),
         );
         this.service.getConfigWeekDays().subscribe(
             (data: any) => {
                 this.weekDays = data;
                 this.currentWeekDays = data;
             },
-            error => console.log(error)
+            error => console.log(error),
         );
         this.service.getAllClassRooms().subscribe(
             (data: any) => {
                 this.classRooms = data;
             },
-            error => console.log(error)
+            error => console.log(error),
         );
         this.service.getAllSubjects().subscribe(
             (data: any) => {
                 this.subjects = data;
-                for(let i = 0; i<this.subjects.length; i++){
+                for (let i = 0; i < this.subjects.length; i++) {
                     this.subjectDataMapping[this.subjects[i].id] = this.subjects[i];
                 }
             },
-            error => console.log(error)
+            error => console.log(error),
         );
         this.service.getAllProfessors().subscribe(
             (data: any) => {
-                this.professors = data.map((professor : ProfessorInterface) => {
-                    professor.subjects = (professor.subjects as ProfessorSubjectInterface[]).map((item : ProfessorSubjectInterface) => {
+                this.professors = data.map((professor: ProfessorInterface) => {
+                    professor.subjects = (professor.subjects as ProfessorSubjectInterface[]).map((item: ProfessorSubjectInterface) => {
                         return item.subject_id;
                     }) as string[];
                     return professor;
                 });
-                for(let i = 0; i<this.professors.length; i++){
+                for (let i = 0; i < this.professors.length; i++) {
                     this.professorDataMapping[this.professors[i].id] = this.professors[i];
                 }
             },
-            error => console.log(error)
+            error => console.log(error),
         );
 
         this.refreshTimeTable();
     }
 
     refreshTimeTable() {
-        let filterOptions: any = {};
+        const filterOptions: any = {};
 
         if (this.selectedClassRoom != 'all') {
             filterOptions.class_room_id = parseInt(this.selectedClassRoom);
@@ -228,17 +228,16 @@ export class DashboardComponent implements OnDestroy {
             (data: any) => {
                 this.transformTimeTableData(data);
             },
-            error => console.log(error)
+            error => console.log(error),
         );
     }
 
-    transformTimeTableData(items : TimeTableInterface[])
-    {
+    transformTimeTableData(items: TimeTableInterface[]) {
         this.timeTableRows = items;
         this.dataMapping = {};
         this.professorTimeTableDataMapping = {};
-        for (let i = 0; i<items.length; i++){
-            let item = items[i];
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
             if (Number(item.professor_id) > 0) {
                 if (!this.professorTimeTableDataMapping[item.professor_id]) {
                     this.professorTimeTableDataMapping[item.professor_id] = {};
@@ -269,22 +268,22 @@ export class DashboardComponent implements OnDestroy {
     }
     getDayInfo(classRoomId, timeSlotId, weekDayId) {
         try {
-            let data = [];
+            const data = [];
             const info =  this.dataMapping[classRoomId][weekDayId][timeSlotId] ?
                 this.dataMapping[classRoomId][weekDayId][timeSlotId] : null;
 
-            if(info && this.professorDataMapping[info.professor_id]){
+            if (info && this.professorDataMapping[info.professor_id]) {
                 data.push(
-                    this.professorDataMapping[info.professor_id].name
-                )
+                    this.professorDataMapping[info.professor_id].name,
+                );
             }
 
-            if(info && this.subjectDataMapping[info.subject_id]){
+            if (info && this.subjectDataMapping[info.subject_id]) {
                 data.push(
-                    `(${this.subjectDataMapping[info.subject_id].name})`
-                )
+                    `(${this.subjectDataMapping[info.subject_id].name})`,
+                );
             }
-            if(data.length === 0) {
+            if (data.length === 0) {
                 return '-';
             }
             return data.join(' ');
@@ -292,15 +291,15 @@ export class DashboardComponent implements OnDestroy {
             return '-';
         }
     }
-    getDayInfoByProfessor(info : TimeTableInterface) {
+    getDayInfoByProfessor(info: TimeTableInterface) {
         try {
-            let data = [];
-            if(info && this.subjectDataMapping[info.subject_id]){
+            const data = [];
+            if (info && this.subjectDataMapping[info.subject_id]) {
                 data.push(
-                    `(${this.subjectDataMapping[info.subject_id].name})`
-                )
+                    `(${this.subjectDataMapping[info.subject_id].name})`,
+                );
             }
-            if(data.length === 0) {
+            if (data.length === 0) {
                 return 'Unknown';
             }
             return data.join(' ');

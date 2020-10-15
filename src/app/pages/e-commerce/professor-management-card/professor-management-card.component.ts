@@ -34,7 +34,7 @@ export class ProfessorManagementCardComponent {
         if (!subjects) {
             return [];
         }
-        return subjects.map((subject: any) => subject.subject_id)
+        return subjects.map((subject: any) => subject.subject_id);
     }
 
     editProfessor(professor: ProfessorInterface) {
@@ -50,12 +50,12 @@ export class ProfessorManagementCardComponent {
             (data: any) => {
                 this.professors.splice(index, 1);
             },
-            error => console.log(error)
+            error => console.log(error),
         );
     }
 
     onSubmit() {
-        let formData = this.professorForm.value;
+        const formData = this.professorForm.value;
         this.service.addNewProfessors(formData).subscribe(
             (data: ProfessorInterface) => {
                 this.initForm();
@@ -70,7 +70,7 @@ export class ProfessorManagementCardComponent {
                     }
                 });
             },
-            error => console.log(error)
+            error => console.log(error),
         );
     }
 
@@ -81,8 +81,8 @@ export class ProfessorManagementCardComponent {
                 this.subjects = data;
             },
             error => {
-                console.log(error)
-            }
+                console.log(error);
+            },
         );
         this.service.getAllProfessors().subscribe(
             (data: any) => {
@@ -91,8 +91,8 @@ export class ProfessorManagementCardComponent {
             },
             error => {
                 this.dataLoading = false;
-                console.log(error)
-            }
+                console.log(error);
+            },
         );
     }
 }
