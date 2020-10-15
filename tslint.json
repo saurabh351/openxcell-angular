@@ -132,6 +132,10 @@
     "use-lifecycle-interface": true,
     "use-pipe-transform-interface": true,
     "component-class-suffix": true,
-    "directive-class-suffix": true
+    "directive-class-suffix": true,
+    "use-host-property-decorator" :true,
+    "use-input-property-decorator" : true,
+    "use-output-property-decorator":true,
+    "no-attribute-parameter-decorator" : true
 }
 }
